@@ -1,0 +1,18 @@
+#When applying network policy to control pod to pod interactions esp within a mesh member namespace remember to consider the following
+#- there is np which allow pod to pod interactions within members of a cp (so it needs to be altered or deleted for the NP to work)
+#- there might be a NP to allow all ingress from all namespaces and all pods (this needs to be altered or deleted for the NP to work)
+#- there might be other conflicting NP like allow all ingress from within the same Namespace 
+
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: backend-allow-greeting
+spec:
+  podSelector:
+    matchLabels:
+      app: backend-service
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: greeting-service

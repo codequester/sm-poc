@@ -1,0 +1,17 @@
+*target*
+*.jar
+*.war
+*.ear
+*.class
+.settings
+.classpath
+.project
+.metadata
+.DS_Store
+.code-workspace
+*.crt
+*.key
+*.p12
+*.password
+*workspace*
+

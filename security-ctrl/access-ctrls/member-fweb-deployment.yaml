@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: member-fweb-service
+  labels:
+    app: member-fweb-service
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: member-fweb-service
+      version: v1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"     
+      labels:
+        app: member-fweb-service
+        version: v1
+    spec:
+      containers:
+        - image: image-registry.openshift-image-registry.svc:5000/mesh-training-member/front-end:1.0
+          imagePullPolicy: Always
+          name: app
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BACK_END_SERVICE_URL
+              value: 'http://member-bweb-service'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: member-fweb-service
+  labels:
+    app: member-fweb-service
+spec:
+  selector:
+    app: member-fweb-service
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http

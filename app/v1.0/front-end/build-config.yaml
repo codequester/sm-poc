@@ -1,0 +1,30 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: front-end
+spec:
+  successfulBuildsHistoryLimit: 1
+  failedBuildsHistoryLimit: 1
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "1024Mi"
+    limits:
+      cpu: "1500m"
+      memory: "2048Mi"
+  output:
+    to:
+      kind: DockerImage
+      name: image-registry.openshift-image-registry.svc:5000/mesh-training/front-end:1.0
+  source:
+    binary: {}
+    type: binary
+  strategy:
+    type: dockerStrategy
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+      from:
+        kind: DockerImage 
+        name: image-registry.openshift-image-registry.svc:5000/openshift/ubi8-openjdk-8:1.3
+  triggers:
+    - type: ConfigChange

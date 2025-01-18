@@ -1,0 +1,11 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: backend-pa
+spec:
+  selector:
+    matchLabels:
+      app: backend-service
+  mtls:
+    #mode: PERMISSIVE #STRICT DISABLED
+    mode: STRICT

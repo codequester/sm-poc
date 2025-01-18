@@ -1,0 +1,14 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: ingress-allow-policy
+  namespace: mesh-training-cp
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        ipBlocks: ["10.128.2.6", "10.131.0.28", "3.22.94.164"]

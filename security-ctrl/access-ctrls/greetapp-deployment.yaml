@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: greetapp-backend-sa
+  labels:
+    app: greetapp-backend-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greetapp-backend-service
+  labels:
+    app: greetapp-backend-service
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: greetapp-backend-service
+      version: v2
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true" 
+      labels:
+        app: greetapp-backend-service
+        version: v2
+    spec:
+      serviceAccountName: greetapp-backend-sa
+      containers:
+        - name: app
+          image: image-registry.openshift-image-registry.svc:5000/mesh-training/back-end:2.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: greetapp-backend-service
+  labels:
+    app: greetapp-backend-service
+spec:
+  selector:
+    app: greetapp-backend-service
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+---
+## GREET APP FRONT END
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: greetapp-frontend-sa
+  labels:
+    app: greetapp-frontend-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greetapp-frontend-service
+  labels:
+    app: greetapp-frontend-service
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: greetapp-frontend-service
+      version: v1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+      labels:
+        app: greetapp-frontend-service
+        version: v1
+    spec:
+      serviceAccountName: greetapp-frontend-sa
+      containers:
+        - image: image-registry.openshift-image-registry.svc:5000/mesh-training/front-end:1.0
+          imagePullPolicy: Always
+          name: app
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BACK_END_SERVICE_URL
+              value: 'http://greetapp-backend-service'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: greetapp-frontend-service
+  labels:
+    app: greetapp-frontend-service
+spec:
+  selector:
+    app: greetapp-frontend-service
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http

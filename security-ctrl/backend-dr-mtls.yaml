@@ -1,0 +1,9 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: backend-dr-mtls
+spec:
+  host: backend-service
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL #SIMPLE MUTUAL DISABLE

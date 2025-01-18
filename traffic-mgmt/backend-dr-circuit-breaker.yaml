@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+    name: backend-dr
+spec:
+    host: backend-service
+    subsets:     
+      - name: v2
+        labels:
+          version: v2
+        trafficPolicy:
+          loadBalancer:
+            simple: RANDOM   
+            localityLbSetting:
+              enabled: false     
+          outlierDetection:
+            consecutive5xxErrors: 1
+            interval: 1s
+            baseEjectionTime: 1m
+            maxEjectionPercent: 100                      

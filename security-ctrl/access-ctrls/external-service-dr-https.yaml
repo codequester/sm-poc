@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+    name: external-service-dr
+spec:
+    host: httpbin.org
+    trafficPolicy:
+        portLevelSettings:
+            - port:
+                  number: 443
+              tls:
+                  mode: SIMPLE # or ISTIO_MUTUAL if global mTLS is configured
+    subsets:
+        - name: httpbin-tls-origination

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nonmember-bweb-service-v1
+  labels:
+    app: nonmember-bweb-service
+    version: v1
+spec:
+  replicas: 1 #3
+  selector:
+    matchLabels:
+      app: nonmember-bweb-service
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: nonmember-bweb-service
+        version: v1
+    spec:
+      containers:
+        - name: app
+          image: image-registry.openshift-image-registry.svc:5000/mesh-training-non-member/back-end:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nonmember-bweb-service
+  labels:
+    app: nonmember-bweb-service
+spec:
+  selector:
+    app: nonmember-bweb-service
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http

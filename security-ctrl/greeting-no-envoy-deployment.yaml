@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greeting-service
+  labels:
+    app: greeting-service
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: greeting-service
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: greeting-service
+        version: v1
+    spec:
+      containers:
+        - image: image-registry.openshift-image-registry.svc:5000/mesh-training/front-end:1.0
+          imagePullPolicy: Always
+          name: app
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BACK_END_SERVICE_URL
+              value: "http://backend-service"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: greeting-service
+  labels:
+    app: greeting-service
+spec:
+  selector:
+    app: greeting-service
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+

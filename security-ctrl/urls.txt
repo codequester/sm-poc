@@ -1,0 +1,47 @@
+curl http://frontend-service.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com/
+
+curl http://frontend-service.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com/status
+
+curl http://greeting-service-mesh-training.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com
+
+
+========================= SIMPLE TLS Mode =========================
+
+--- OPTION 1 : Using serivce serving certificate for Server - For SIMPLE TLS Mode
+oc annotate -n mesh-training-cp service istio-ingressgateway service.beta.openshift.io/serving-cert-secret-name=gw-cert
+
+-- OPTION 2: Using Custom Cert for Server - For SIMPLE TLS Mode
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=example Inc./CN=opentlc.com' -keyout ca-key.key -out ca-cert.crt
+openssl req -out frontend.csr -newkey rsa:2048 -nodes -keyout frontend.key -subj "/CN=frontend-service.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com/O=example Inc."
+openssl x509 -req -days 365 -CA ca-cert.crt -CAkey ca-key.key -set_serial 0 -in frontend.csr -out frontend.crt
+oc create secret tls frontend-gw-cert -n mesh-training-cp --key=frontend.key --cert=frontend.crt
+
+curl -k https://frontend-service.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com/
+or
+curl --cacert ca-cert.crt "https://frontend-service.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com/"
+===================================================================
+========================= MUTUAL TLS Mode =========================
+oc delete secret -n mesh-training-cp frontend-gw-cert
+oc create secret generic frontend-gw-cert -n mesh-training-cp --from-file=tls.key=frontend.key --from-file=tls.crt=frontend.crt --from-file=ca.crt=ca-cert.crt
+
+curl -v --cacert ca-cert.crt "https://frontend-service.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com/" --> handshake failure
+
+openssl req -out client.csr -newkey rsa:2048 -nodes -keyout client.key -subj "/CN=client.example.com/O=client organization"
+openssl x509 -req -days 365 -CA ca-cert.crt -CAkey ca-key.key -set_serial 1 -in client.csr -out client.crt
+
+curl --cacert ca-cert.crt --cert client.crt --key client.key "https://frontend-service.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com/"
+===================================================================
+======================= PASSTHROUGH TLS Mode ======================
+openssl pkcs12 -export -in frontend.crt -inkey frontend.key -chain -CAfile ca-cert.crt -name frontend -out frontend.p12
+keytool -import -keystore frontend-trust.jks -alias CAroot -file ca-cert.crt -trustcacerts
+#oc create secret generic frontend-gw-keystore --from-file=frontend.p12
+oc create secret generic frontend-gw-certs --from-file=.
+oc create configmap frontend-gw-config --from-file=application.yaml
+curl --cacert ca-cert.crt --cert client.crt --key client.key "https://frontend-service.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com/"
+===================================================================
+
+
+====================================================== ACCESS CONTROLS ====================================================== 
+
+curl -sSI https://httpbin.org
+curl -sSI https://httpbin.org/delay/5

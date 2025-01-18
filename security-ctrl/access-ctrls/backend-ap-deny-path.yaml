@@ -1,0 +1,14 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: "backend-deny-path"
+spec:
+  selector:
+    matchLabels:
+      app: backend-service
+  action: DENY
+  rules:
+  - to:
+    - operation:
+        paths: ["/greet"]
+

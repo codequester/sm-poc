@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: member-bweb-service-v1
+  labels:
+    app: member-bweb-service
+    version: v1
+spec:
+  replicas: 1 #3
+  selector:
+    matchLabels:
+      app: member-bweb-service
+      version: v1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"     
+      labels:
+        app: member-bweb-service
+        version: v1
+    spec:
+      containers:
+        - name: app
+          image: image-registry.openshift-image-registry.svc:5000/mesh-training-member/back-end:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: member-bweb-service
+  labels:
+    app: member-bweb-service
+spec:
+  selector:
+    app: member-bweb-service
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http

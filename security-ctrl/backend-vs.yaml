@@ -1,0 +1,11 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: backend-vs    
+spec:
+  hosts:
+    - backend-service
+  http:
+    - route:
+      - destination:
+          host: backend-service

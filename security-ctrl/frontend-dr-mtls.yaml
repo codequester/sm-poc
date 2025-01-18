@@ -1,0 +1,9 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: frontend-dr-mtls
+spec:
+  host: frontend-service
+  trafficPolicy:
+    tls:
+      mode: MUTUAL #SIMPLE MUTUAL DISABLE

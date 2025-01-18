@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: frontend-gw
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        ### Using service service cert
+        #mode: SIMPLE 
+        #credentialName: gw-cert
+        ### Using custome cert
+        #mode: SIMPLE 
+        #credentialName: frontend-gw-cert        
+        ### MUTUAL TLS
+        #mode: MUTUAL
+        #credentialName: frontend-gw-cert        
+        mode: PASSTHROUGH
+      hosts:
+        - 'frontend-service.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com'

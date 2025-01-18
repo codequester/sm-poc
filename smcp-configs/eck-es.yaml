@@ -1,0 +1,18 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: sm-es
+  namespace: my-es
+spec:
+  http:
+    tls:
+      certificate:
+        secretName: my-cert
+      selfSignedCertificate:
+        disabled: true
+  nodeSets:
+    - config:
+        node.store.allow_mmap: false
+      count: 3
+      name: default
+  version: 8.2.0

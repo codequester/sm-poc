@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-service
+  labels:
+    app: frontend-service
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-service
+      version: v1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+      labels:
+        app: frontend-service
+        version: v1
+    spec:
+      containers:
+        - image: image-registry.openshift-image-registry.svc:5000/mesh-training/front-end:1.0
+          imagePullPolicy: Always
+          name: app
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BACK_END_SERVICE_URL
+              value: 'http://backend-service:8080'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: frontend-service
+  labels:
+    app: frontend-service
+spec:
+  selector:
+    app: frontend-service
+  ports:
+    - port: 8080
+      name: http

@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: frontend-vs
+spec:
+  hosts:
+    - "frontend-service.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com"
+  gateways:
+    - frontend-gw
+  tls:
+    - match:
+      - port: 443
+        sniHosts:
+          - "frontend-service.apps.cluster-4bdh4.4bdh4.sandbox104.opentlc.com"
+      route:
+      - destination:
+          host: frontend-service
+          port:
+            number: 443

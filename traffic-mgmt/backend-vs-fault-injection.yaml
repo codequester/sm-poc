@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: backend-vs     
+spec:
+  hosts:
+    - backend-service
+  http:
+    - fault:
+        abort:
+          httpStatus: 403
+          percentage:
+            value: 90
+      route:
+        - destination:
+            host: backend-service
+            port:
+              number: 8080
+            subset: v2                   

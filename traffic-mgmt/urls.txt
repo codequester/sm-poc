@@ -1,0 +1,11 @@
+curl http://frontend-service.apps.cluster-dgtvc.dgtvc.sandbox930.opentlc.com/
+
+curl http://frontend-service.apps.cluster-dgtvc.dgtvc.sandbox930.opentlc.com/status
+
+curl -H "opt-in: yes" http://frontend-service.apps.cluster-dgtvc.dgtvc.sandbox930.opentlc.com/
+
+curl "http://localhost:8080/fault?throwErr=false&delay=5000"
+
+curl "http://localhost:8080/fault?throwErr=true&delay=0"
+
+curl "http://localhost:8080/fault?throwErr=false&delay=0"

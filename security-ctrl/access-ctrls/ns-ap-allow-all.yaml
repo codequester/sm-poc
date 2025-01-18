@@ -1,0 +1,14 @@
+#The following example shows an ALLOW policy that allows full access to the workload. 
+#It will make other ALLOW policies useless as it will always allow the request. 
+#It might be useful if you want to temporarily expose full access to the workload. 
+#Note the request could still be denied due to CUSTOM and DENY policies
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-all
+spec:
+  action: ALLOW
+  # This matches everything.
+  rules:
+  - {}
+

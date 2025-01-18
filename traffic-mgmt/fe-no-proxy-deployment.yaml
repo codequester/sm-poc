@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fe-trace-svc
+  labels:
+    app: fe-trace-svc
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fe-trace-svc
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: fe-trace-svc
+        version: v1
+    spec:
+      containers:
+        - image: image-registry.openshift-image-registry.svc:5000/mesh-training/fe-trace:1.0
+          imagePullPolicy: Always
+          name: app
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BACK_END_SERVICE_URL
+              value: 'http://backend-service:8080'
+            - name: JAEGER_SERVICE_URL
+              value: 'http://my-jaeger-collector.mesh-training-cp.svc:9411'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: fe-trace-svc
+  labels:
+    app: fe-trace-svc
+spec:
+  selector:
+    app: fe-trace-svc
+  ports:
+    - port: 8080
+      name: http

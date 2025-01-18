@@ -1,0 +1,15 @@
+backend:
+  service:
+    url: ${BACK_END_SERVICE_URL:http://localhost:8081/} 
+server:
+  ssl:
+    enabled: true
+    key-store: /app/certs/frontend.p12
+    key-store-password: changeit
+    keys-store-type: pkcs12
+    client-auth: need
+    trust-store: /app/certs/frontend-trust.jks
+    trust-store-password: changeit
+    trust-store-type: jks
+  port: 8443
+ 

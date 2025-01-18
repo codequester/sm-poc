@@ -1,0 +1,17 @@
+curl http://backend-service/greet
+curl http://backend-service.mesh-training/greet
+curl http://frontend-service
+curl http://greetapp-frontend-service
+curl http://greetapp-backend-service
+
+curl http://member-bweb-service/greet
+curl http://member-bweb-service.mesh-training-member/greet
+
+curl http://nonmember-bweb-service/greet
+curl http://nonmember-bweb-service.mesh-training-non-member/greet
+
+
+curl -H "allowed: Y"  http://backend-service/greet
+
+
+
